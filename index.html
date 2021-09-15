@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8">
+        <title>Light Characteristics</title>
+        <style>
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            html, body {
+                height: 100%;
+                width: 100%;
+            }
+            body {
+                background: #000;
+            }
+            main {
+                display: flex;
+                width: 100%;
+                height: 100%;
+                align-items: center;
+                justify-content: center;
+            }
+
+            .light {
+                width: 100px;
+                height: 100px;
+                min-width: 50px;
+                min-height: 50px;
+                background: radial-gradient(circle at center, #fff 0%, #fff 20%, #000 70%);
+                display: block;
+            }
+
+        </style>
+    </head>
+    <body>
+        <main><span id="light" class="light"></span></main>
+        <aside></aside>
+        <script type="module" src="./lights.js"></script>
+    </body>
+</html>
