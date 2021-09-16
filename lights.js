@@ -1,4 +1,4 @@
-import { fixedAndFlashing, compositeGroupOcculting, longFlashing, groupQuick, groupLongFlashing, interruptedQuick, groupQuickByLongFlash } from "./characteristics.js"
+import { alternating, COLOR_WHITE, COLOR_GREEN, COLOR_RED, flashing} from "./characteristics.js"
 
 
 function convertToRelativeKeyFrames(keyframes, duration) {
@@ -20,4 +20,5 @@ export function animate([keyframes, duration]) {
     })
 } 
 
-animate(groupQuickByLongFlash(12000, 6))
+// animate(alternating(6000, [COLOR_WHITE, COLOR_GREEN, COLOR_RED]))
+animate(flashing(1000)) 

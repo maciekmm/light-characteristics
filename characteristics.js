@@ -1,6 +1,20 @@
-const O_ON = 1
-const O_DIM = 0.4
-const O_OFF = 0.001;
+export const COLOR_WHITE = 'white';
+export const COLOR_RED = 'red';
+export const COLOR_GREEN = 'green';
+
+const O_ON = (color = COLOR_WHITE) => {return {
+    color: color,
+    opacity: 1
+}}
+
+const O_DIM = (color = COLOR_WHITE) => {return {
+    opacity: 0.4,
+    color: COLOR_WHITE
+}}
+const O_OFF = {
+    opacity: 0.001,
+    color: COLOR_WHITE
+}
 
 const FLASH_DURATION = 200;
 const QUICK_FLASH_DURATION = 60*1000.0 / 70.0;
@@ -48,16 +62,14 @@ function compositeGroup(period, groupOnIntensity, groupOffIntensity, onDuration,
 
 
 //F
-export function fixed(duration = Infinity, light = O_ON) {
+export function fixed(duration = Infinity, light = O_ON(COLOR_WHITE)) {
     const keyframes = [
         {
-            opacity: light,
-            easing: 'steps(1, end)'
+            opacity: light.opacity,
+            backgroundColor: light.color,
+            easing: 'steps(1, end)',
+            // easing: 'cubic-bezier(0.8, 0, 1,0)'
         },
-        {
-            opacity: light,
-            easing: 'steps(1, end)'
-        }
     ]
     return [keyframes, duration]
 }
@@ -68,7 +80,7 @@ export function fixedAndFlashing(period, inGroup = 1) {
     const flashes = []
 
     for (let i = 0; i < inGroup; i++) {
-        flashes.push(...[fixed(FLASH_DURATION, O_ON), fixed(FLASH_DURATION, O_DIM)])
+        flashes.push(...[fixed(FLASH_DURATION, O_ON(COLOR_WHITE)), fixed(FLASH_DURATION, O_DIM(COLOR_WHITE))])
     }
 
     const durationOfFlashes = FLASH_DURATION * 2 * inGroup;
@@ -78,7 +90,7 @@ export function fixedAndFlashing(period, inGroup = 1) {
 
     return combine(
         ...flashes,
-        fixed(period - durationOfFlashes, O_DIM)
+        fixed(period - durationOfFlashes, O_DIM(COLOR_WHITE))
     )
 }
 
@@ -89,7 +101,7 @@ export function occulting(period) {
     }
 
     return combine(
-        fixed(0.7 * period, O_ON),
+        fixed(0.7 * period, O_ON(COLOR_WHITE)),
         fixed(0.3 * period, O_OFF)
     );
 }
@@ -101,7 +113,7 @@ export function groupOcculting(period, dims = 2) {
 
 //Oc(x+y)
 export function compositeGroupOcculting(period, ...dimGroups) {
-    return compositeGroup(period, O_OFF, O_ON, FLASH_DURATION, FLASH_DURATION, dimGroups)
+    return compositeGroup(period, O_OFF, O_ON(COLOR_WHITE), FLASH_DURATION, FLASH_DURATION, dimGroups)
 }
 
 //Fl(x)
@@ -111,7 +123,7 @@ export function groupFlashing(period, inGroup) {
 
 //Fl(x+y)
 export function compositeGroupFlashing(period, ...groups) {
-    return compositeGroup(period, O_ON, O_OFF, FLASH_DURATION, FLASH_DURATION, groups)
+    return compositeGroup(period, O_ON(COLOR_WHITE), O_OFF, FLASH_DURATION, FLASH_DURATION, groups)
 }
 
 //Fl
@@ -124,7 +136,7 @@ export function longFlashing(period) {
     if(period < 3000) {
         throw "LFl period cannot be shorter than 3s"
     }
-    return compositeGroup(period, O_ON, O_OFF, 2500, 500, 1)
+    return compositeGroup(period, O_ON(COLOR_WHITE), O_OFF, 2500, 500, 1)
 }
 
 //LFl(x)
@@ -137,13 +149,13 @@ export function compositeGroupLongFlashing(period, ...groups) {
     if(period < 3000) {
         throw "LFl period cannot be shorter than 3s"
     }
-    return compositeGroup(period, O_ON, O_OFF, 2500, 500, groups)
+    return compositeGroup(period, O_ON(COLOR_WHITE), O_OFF, 2500, 500, groups)
 }
 
 //Iso
 export function iso(period) {
     return combine(
-        fixed(0.5 * period, O_ON),
+        fixed(0.5 * period, O_ON(COLOR_WHITE)),
         fixed(0.5 * period, O_OFF)
     );
 }
@@ -155,12 +167,12 @@ function blinking(period, minimumFrequency) {
 
     return combine(
         fixed(0.1*period, O_OFF),
-        fixed(0.9*period, O_ON)
+        fixed(0.9*period, O_ON(COLOR_WHITE))
     )
 }
 
 function groupBlinking(period, flashDuration, flashes = 1) {
-    return compositeGroup(period, O_ON, O_OFF, flashDuration/2, flashDuration/2, flashes)
+    return compositeGroup(period, O_ON(COLOR_WHITE), O_OFF, flashDuration/2, flashDuration/2, flashes)
 }
 
 function interruptedBlinking(period, flashDuration) {
@@ -168,7 +180,7 @@ function interruptedBlinking(period, flashDuration) {
     if(dimStageLength<3000) {
         throw "dim stage in interrupted light must of length > 3s, but is " + dimStageLength
     }
-    return compositeGroup(period, O_ON, O_OFF, flashDuration/2, flashDuration/2, 8)
+    return compositeGroup(period, O_ON(COLOR_WHITE), O_OFF, flashDuration/2, flashDuration/2, 8)
 }
 
 function groupBlinkingByLongFlash(period, flashDuration, flashes) {
@@ -177,7 +189,7 @@ function groupBlinkingByLongFlash(period, flashDuration, flashes) {
 
     return combine(
         groupQuick(groupBlinkingDuration, flashes),
-        fixed(longFlashDuration, O_ON),
+        fixed(longFlashDuration, O_ON(COLOR_WHITE)),
         fixed(longFlashDuration, O_OFF)
     )
 }
@@ -213,11 +225,24 @@ export function veryQuickGroup(period, flashes = 1) {
 }
 
 //IVQ
-export function interruptedQuick(period) {
+export function interruptedVeryQuick(period) {
     return interruptedBlinking(period, VERY_QUICK_FLASH_DURATION)
 }
 
 //VQ(x)+LFI
-export function groupQuickByLongFlash(period, flashes) {
+export function groupVeryQuickByLongFlash(period, flashes) {
     return groupBlinkingByLongFlash(period, VERY_QUICK_FLASH_DURATION, flashes)
+}
+
+
+export function alternating(period, colors) {
+    const singleColorPeriod = period / colors.length
+    const lights = []
+    for(let color of colors) {
+        lights.push(fixed(singleColorPeriod, O_ON(color)))
+    }
+
+    return combine(
+        ...lights
+    )
 }

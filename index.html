@@ -14,7 +14,8 @@
                 width: 100%;
             }
             body {
-                background: #000;
+                background: black;
+                
             }
             main {
                 display: flex;
@@ -25,19 +26,67 @@
             }
 
             .light {
-                width: 100px;
-                height: 100px;
+                width: 200px;
+                height: 200px;
                 min-width: 50px;
                 min-height: 50px;
-                background: radial-gradient(circle at center, #fff 0%, #fff 20%, #000 70%);
+                mask-image: radial-gradient(circle at center, black 0%, black 6%, rgba(0,0,0, 0.2) 10%, transparent 70%);
                 display: block;
+            }
+            .above-horizon {
+                position: absolute;
+                top: 0;
+                left: 0;
+                overflow: hidden;
+                z-index: -1;
+                width: 100%;
+                max-width: 100%;
+                height: 55%;
+                mask-image: linear-gradient(to bottom, white 0%, white 95%, transparent 100%);
+            }
+            .water {
+                height: 60%;
+                position: absolute;
+                left: 0;
+                bottom: 0;
+                width: 100%;
+                z-index: -2;
+                background-image: url('https://c.pxhere.com/photos/c4/c8/water_texture_lake_sea_wave_lukewarm_blue_frisch-1184762.jpg!d');
+                background-size: cover;
+                background-repeat: no-repeat;
+                background-position-x: 0;
+                animation: sea 2s infinite ease-in-out;
+                filter: opacity(0.05);
+            }
+
+            @keyframes sea {
+                from {
+                    background-position: 0 0;
+                }
+                50% {
+                    background-position: 5px 5px;
+                }
+                to {
+                    background-position: 0 0;
+                }
             }
 
         </style>
+        <link  rel="stylesheet" href="sky.css">
     </head>
     <body>
+
         <main><span id="light" class="light"></span></main>
         <aside></aside>
         <script type="module" src="./lights.js"></script>
+
+        <div class="above-horizon">
+            <div class="stars"></div>
+            <div class="twinkling"></div>
+            <!-- <div class="clouds"></div> -->
+        </div>
+        <div class="water">
+
+        </div>
     </body>
 </html>
